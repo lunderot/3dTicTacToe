@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>3D Tic Tac Toe!</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="script.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<audio id="place" src="sound/place.wav" preload="auto"></audio>
+		<audio id="error" src="sound/error.wav" preload="auto"></audio>
+		<audio id="win" src="sound/win.wav" preload="auto"></audio>
+		
+		<div id="wrap">
+			<form id="login">
+					Nickname: <input size="35" id="nickname" autofocus="autofocus" autocomplete="off"></input>
+					<input type="submit" value="Send"></input>
+			</form>
+			<div id="playfield">
+				<div class="layer one">
+					<table class="grid">
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+					</table>
+				</div>
+				<div class="layer two">
+					<table class="grid">
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+					</table>
+				</div>
+				<div class="layer three">
+					<table class="grid">
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+							<td><div class="button">&nbsp;</div></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div id="chatfield">
+				<div id="chat"></div>
+				<form id="send-message">
+					<input size="35" id="message" autocomplete="off">
+					<input type="submit" value="Send">
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

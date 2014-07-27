@@ -1,0 +1,73 @@
+body {
+	background: rgb(0, 153, 0);
+}
+#wrap {
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+}
+#chatfield {
+	float: left;
+	/*display: none;*/
+}
+#chat {
+	width: 400px;
+	height: 500px;
+	overflow-y: scroll;
+	background: rgb(255, 255, 255);
+}
+#playfield {
+	width: 400px;
+	height: auto;
+	padding-top: 20px;
+	float: left;
+	/*display: none;*/
+}
+#login {
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.layer {
+	position: relative;
+	width: 200px;
+	height: 200px;
+	margin-top: -20px;
+	margin-left: auto;
+	margin-right: auto;
+	transform: rotate(-30deg) skewX(30deg) skewY(0deg) scaleY(0.87);
+	-ms-transform: rotate(-30deg) skewX(30deg) skewY(0deg) scaleY(0.87);
+	-webkit-transform: rotate(-30deg) skewX(30deg) skewY(0deg) scaleY(0.87);
+}
+.one {
+	z-index: 3;
+}
+.two {
+	z-index: 2;
+}
+.three {
+	z-index: 1;
+}
+.grid {
+	width: 100%;
+	height: 100%;
+}
+.grid tr {
+	height: 33%;
+}
+.button {
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.7);
+}
+.button:hover {
+	background: rgba(255, 255, 255, 0.9);
+}
+.cross, .cross:hover {
+	background: rgb(0, 0, 255);
+}
+.circle, .circle:hover {
+	background: rgb(255, 0, 0);
+}
