@@ -19,6 +19,7 @@ function Player(socket, nickname)
 	this.socket = socket;
 	this.nickname = nickname;
 	this.markers = 0;
+	this.hasTurn = false;
 }
 
 Player.prototype.swapMarker = function(marker) {
@@ -44,22 +45,29 @@ Player.prototype.getScore = function() {
 	return score;
 };
 
+Player.prototype.swapTurn = function() {
+	this.hasTurn = !this.hasTurn;
+};
+
 function getPlayerIdFromSocket (socket) {
-	var i;
-	for (i = players.length - 1; i >= 0; i--) {
-		if(players[i].socket == socket)
+	var index = undefined;
+	for (var i = players.length - 1; i >= 0; i--) {
+		if(players[i].socket == socket) {
+			index = i;
 			break;
+		}
 	};
-	return i;
+	return index;
 }
 
 function getPlayerFromSocket (socket) {
-	var i;
-	for (i = players.length - 1; i >= 0; i--) {
-		if(players[i].socket == socket)
-			break;
-	};
-	return players[i];
+	var index = getPlayerIdFromSocket(socket);
+	if (index == undefined) {
+		return undefined;
+	}
+	else {
+		return players[index];
+	}
 }
 
 //Player variables
