@@ -14,16 +14,27 @@ var combos = [
 	parseInt("000000000000000000000000111", 2)
 ];
 
-function Player(socket, nickname)
+function Player(socket, nickname, type)
 {
 	this.socket = socket;
 	this.nickname = nickname;
 	this.markers = 0;
 	this.hasTurn = false;
+	this.type = type;
 }
 
 Player.prototype.swapMarker = function(marker) {
 	this.markers ^= marker;
+};
+
+Player.prototype.placeMarker = function(marker) {
+	if(!this.hasCombo(marker)) {
+		this.swapMarker(marker);
+		return true;
+	}
+	else {
+		return false;
+	}
 };
 
 Player.prototype.resetMarkers = function() {
@@ -31,7 +42,7 @@ Player.prototype.resetMarkers = function() {
 };
 
 Player.prototype.hasCombo = function(combo) {
-	return this.marker & combo == combo;
+	return (this.markers & combo) == combo;
 };
 
 Player.prototype.getScore = function() {
@@ -70,8 +81,10 @@ function getPlayerFromSocket (socket) {
 	}
 }
 
-//Player variables
+//Game variables
 var players = [];
+
+var gameRunning = false;
 
 
 //Setup the server
@@ -90,17 +103,51 @@ app.get(/^(.+)$/, function(req, res){
 io.on("connection", function(socket) {
 	socket.on("disconnect", function() {
 		var index = getPlayerIdFromSocket(socket);
-		socket.broadcast.emit("chatmessage", players[index].nickname + " has disconnected.");
-		players.splice(index, 1);
-	});
-
-	socket.on("clientinfo", function(data) {
-		players.push(new Player(socket, data.nickname));
-		socket.broadcast.emit("chatmessage", data.nickname + " has connected.");
+		if (index != undefined) {
+			socket.broadcast.emit("chatmessage", players[index].nickname + " has disconnected.");
+			players.splice(index, 1);
+		};
 	});
 
 	socket.on("chatmessage", function(data) {
 		var player = getPlayerFromSocket(socket);
 		io.sockets.emit("chatmessage", player.nickname + ": " + data);
 	});
+
+	socket.on("clientinfo", function(data) {
+		players.push(new Player(socket, data.nickname, "circle"));
+		socket.broadcast.emit("chatmessage", data.nickname + " has connected.");
+		if (players.length == 2 && !gameRunning) {
+			//Start game
+			gameRunning = true;
+			//Randomize turn
+			var randomPlayer = players[Math.floor(Math.random()*players.length)];
+			randomPlayer.swapTurn();
+			randomPlayer.type = "cross";
+		};
+	});
+
+	socket.on("place", function(data) {
+		var player = getPlayerFromSocket(socket);
+		if(player != undefined)
+		{
+			console.log("Place: " + data.toString(2));
+
+			if (player.hasTurn) {
+				if(player.placeMarker(data)) {
+					player.swapTurn();
+					//TODO: Broadcast data to all clients
+					io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
+				}
+				else {
+					//Invalid move
+					socket.emit("chatmessage", "Invalid move.");
+				}
+			}
+			else {
+				socket.emit("chatmessage", "It is not your turn.");
+			}
+		}
+	});
+	
 });

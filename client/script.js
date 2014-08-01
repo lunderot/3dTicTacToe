@@ -33,8 +33,14 @@ jQuery(function($){
 		$chat.append($('<i></i>').text(data).html() + "<br/>");
 		$chat.scrollTop($chat[0].scrollHeight);
 	});
-	socket.on("place", function(data) { //When someone places a marker
-		$playfield.find(".layer:eq(" + data.z + ")").find("tr:eq(" + data.y + ")").find("td:eq(" + data.x + ")").find(".button").removeClass("preview").addClass(data.type);
+	socket.on("update", function(data) {
+		var mask = parseInt("000000000000000000000000001", 2);
+		$(".button").each(function(index) {
+			if((data.data & mask) == mask) {
+				$(this).addClass(data.type);
+			}
+			mask = mask << 1;
+		});
 	});
 	socket.on("reset", function(data) {
 		$playfield.find(".button").removeClass("circle");
@@ -45,12 +51,8 @@ jQuery(function($){
 	});
 	
 	$buttons.click(function() { //When a button is clicked
-		socket.emit("place", { x: $(this).parents("td").index(), y: $(this).parents("tr").index(), z: $(this).parents(".layer").index() });
-	});
-	$buttons.hover(function(){
-		if(!$(this).hasClass("cross") && !$(this).hasClass("circle"))
-		{
-			$(this).toggleClass("preview");
-		}
+		var data = 1 << $(this).index(".button");
+		socket.emit("place", data);
+		//socket.emit("place", { x: $(this).parents("td").index(), y: $(this).parents("tr").index(), z: $(this).parents(".layer").index() });
 	});
 });
