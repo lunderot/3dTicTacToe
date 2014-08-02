@@ -65,7 +65,6 @@ function Player(socket, nickname, type)
 	this.socket = socket;
 	this.nickname = nickname;
 	this.markers = 0;
-	this.hasTurn = false;
 	this.type = type;
 }
 
@@ -100,10 +99,6 @@ Player.prototype.getScore = function() {
 			
 	};
 	return score;
-};
-
-Player.prototype.swapTurn = function() {
-	this.hasTurn = !this.hasTurn;
 };
 
 function getPlayerIdFromSocket (socket) {
