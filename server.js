@@ -83,7 +83,7 @@ function getPlayerFromSocket (socket) {
 
 //Game variables
 var players = [];
-
+var currentPlayerId = 0;
 var gameRunning = false;
 
 
@@ -121,23 +121,23 @@ io.on("connection", function(socket) {
 			//Start game
 			gameRunning = true;
 			//Randomize turn
-			var randomPlayer = players[Math.floor(Math.random()*players.length)];
-			randomPlayer.swapTurn();
-			randomPlayer.type = "cross";
+			currentPlayerId = Math.floor(Math.random()*players.length);
+			players[currentPlayerId].type = "cross";
 		};
 	});
 
 	socket.on("place", function(data) {
+		var playerId = getPlayerIdFromSocket(socket);
 		var player = getPlayerFromSocket(socket);
-		if(player != undefined)
-		{
-			console.log("Place: " + data.toString(2));
 
-			if (player.hasTurn) {
-				if(player.placeMarker(data)) {
-					player.swapTurn();
-					//TODO: Broadcast data to all clients
+		if(playerId != undefined)
+		{
+			if (playerId == currentPlayerId) {
+				if(player.placeMarker(data)) { //Player made a valid move
 					io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
+					//Set current player to the next player in the list
+					currentPlayerId++;
+					currentPlayerId %= players.length;
 				}
 				else {
 					//Invalid move
