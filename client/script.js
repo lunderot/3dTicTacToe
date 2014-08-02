@@ -11,10 +11,6 @@ jQuery(function($){
 	var $playfield = $("#playfield");
 	var $chatfield = $("#chatfield");
 	
-	//Sounds
-	var $placeSound = $("#place-sound");
-	var $buttonSound = $("#button-sound");
-	
 	$messageForm.submit(function(e){ //When the user submits a message
 		e.preventDefault();
 		socket.emit("chatmessage", $messageBox.val());
