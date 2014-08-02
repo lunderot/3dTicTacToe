@@ -41,6 +41,7 @@ jQuery(function($){
 			}
 			mask = mask << 1;
 		});
+		$(".score." + data.type).text(data.score.toString());
 	});
 	socket.on("reset", function(data) {
 		$playfield.find(".button").removeClass("circle");
