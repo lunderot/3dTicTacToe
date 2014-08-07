@@ -173,7 +173,17 @@ io.on("connection", function(socket) {
 		if(playerId != undefined)
 		{
 			if (playerId == currentPlayerId) {
-				if(player.placeMarker(data)) { //Player made a valid move
+				 //Check if player made a valid move
+				var valid = true;
+				for (var i = players.length - 1; i >= 0; i--) {
+					if(players[i].hasCombo(data)) {
+						valid = false;
+						break;
+					}
+				};
+
+				if(valid) {
+					player.swapMarker(data);
 					io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
 					socket.emit("sound", "place");
 					//Set current player to the next player in the list
