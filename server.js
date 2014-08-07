@@ -175,6 +175,7 @@ io.on("connection", function(socket) {
 			if (playerId == currentPlayerId) {
 				if(player.placeMarker(data)) { //Player made a valid move
 					io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
+					socket.emit("sound", "place");
 					//Set current player to the next player in the list
 					currentPlayerId++;
 					currentPlayerId %= players.length;
@@ -182,10 +183,12 @@ io.on("connection", function(socket) {
 				else {
 					//Invalid move
 					socket.emit("chatmessage", "Invalid move.");
+					socket.emit("sound", "error");
 				}
 			}
 			else {
 				socket.emit("chatmessage", "It is not your turn.");
+				socket.emit("sound", "error");
 			}
 		}
 	});
