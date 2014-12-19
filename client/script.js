@@ -50,6 +50,5 @@ jQuery(function($){
 	$buttons.click(function() { //When a button is clicked
 		var data = 1 << $(this).index(".button");
 		socket.emit("place", data);
-		//socket.emit("place", { x: $(this).parents("td").index(), y: $(this).parents("tr").index(), z: $(this).parents(".layer").index() });
 	});
 });
