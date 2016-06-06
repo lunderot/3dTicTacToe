@@ -122,6 +122,18 @@ function getPlayerFromSocket (socket) {
 	}
 }
 
+function resetGame(players)
+{
+	for (var i = players.length - 1; i >= 0; i--) {
+		players[i].resetMarkers();
+	}
+	io.sockets.emit("reset");
+	//Start game
+	gameRunning = true;
+	//Randomize turn
+	currentPlayerId = Math.floor(Math.random()*players.length);
+}
+
 //Game variables
 var players = [];
 var currentPlayerId = 0;
@@ -158,49 +170,72 @@ io.on("connection", function(socket) {
 		players.push(new Player(socket, data.nickname, "circle"));
 		socket.broadcast.emit("chatmessage", data.nickname + " has connected.");
 		if (players.length == 2 && !gameRunning) {
-			//Start game
-			gameRunning = true;
-			//Randomize turn
-			currentPlayerId = Math.floor(Math.random()*players.length);
-			players[currentPlayerId].type = "cross";
+			players[1].type = "cross";
+			resetGame(players);
 		};
 	});
 
 	socket.on("place", function(data) {
 		var playerId = getPlayerIdFromSocket(socket);
 		var player = getPlayerFromSocket(socket);
-
-		if(playerId != undefined)
+		
+		if(gameRunning)
 		{
-			if (playerId == currentPlayerId) {
-				 //Check if player made a valid move
-				var valid = true;
-				for (var i = players.length - 1; i >= 0; i--) {
-					if(players[i].hasCombo(data)) {
-						valid = false;
-						break;
+			if(playerId != undefined)
+			{
+				if (playerId == currentPlayerId) {
+					 //Check if player made a valid move
+					var valid = true;
+					for (var i = players.length - 1; i >= 0; i--) {
+						if(players[i].hasCombo(data)) {
+							valid = false;
+							break;
+						}
 					}
-				};
 
-				if(valid) {
-					player.swapMarker(data);
-					io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
-					socket.emit("sound", "place");
-					//Set current player to the next player in the list
-					currentPlayerId++;
-					currentPlayerId %= players.length;
+					if(valid) {
+						player.swapMarker(data);
+						io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
+						socket.emit("sound", "place");
+						
+						//Check if the board is full
+						var markers = 0;
+						for (var i = players.length - 1; i >= 0; i--) {
+							markers = markers | players[i].markers;
+						}
+						if(markers == parseInt("111111111111111111111111111", 2)) //Board is full
+						{
+							var winningPlayerId = 0;
+							if(players[0].getScore() < players[1].getScore())
+							{
+								winningPlayerId = 1;
+							}
+							//Send win message to all clients
+							io.sockets.emit("chatmessage", players[winningPlayerId].nickname + " wins the game with " + players[winningPlayerId].getScore() + " points!");
+							//Send win sound to the winning client
+							players[winningPlayerId].socket.emit("sound", "win");
+							//Send lose sound to every one but the winning client
+							players[winningPlayerId].socket.broadcast.emit("sound", "lose");
+							resetGame(players);
+						}
+						else
+						{
+							//Set current player to the next player in the list
+							currentPlayerId++;
+							currentPlayerId %= players.length;
+						}						
+					}
+					else {
+						//Invalid move
+						socket.emit("chatmessage", "Invalid move.");
+						socket.emit("sound", "error");
+					}
 				}
 				else {
-					//Invalid move
-					socket.emit("chatmessage", "Invalid move.");
+					socket.emit("chatmessage", "It is not your turn.");
 					socket.emit("sound", "error");
 				}
 			}
-			else {
-				socket.emit("chatmessage", "It is not your turn.");
-				socket.emit("sound", "error");
-			}
 		}
 	});
-	
 });

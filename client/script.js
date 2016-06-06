@@ -42,6 +42,7 @@ jQuery(function($){
 	socket.on("reset", function(data) {
 		$playfield.find(".button").removeClass("circle");
 		$playfield.find(".button").removeClass("cross");
+		$(".score").text("0");
 	});
 	socket.on("sound", function(data) {
 		$("#"+data).get(0).play();
