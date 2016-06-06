@@ -194,9 +194,20 @@ io.on("connection", function(socket) {
 					}
 
 					if(valid) {
+						var scoreBefore = player.getScore();
 						player.swapMarker(data);
 						io.sockets.emit("update", {data: player.markers, type: player.type, score: player.getScore()});
-						socket.emit("sound", "place");
+						
+						//If the player's score increased, play a score sound
+						if(player.getScore() > scoreBefore)
+						{
+							players[currentPlayerId].socket.emit("sound", "score");
+							players[currentPlayerId].socket.broadcast.emit("sound", "enemy_score");
+						}
+						else
+						{
+							io.sockets.emit("sound", "place");
+						}
 						
 						//Check if the board is full
 						var markers = 0;
